@@ -1,0 +1,224 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Speaker Session Booking API",
+      "description": "API for booking speaker sessions",
+      "version": "1.0.0"
+    },
+    "host": "localhost:3000",
+    "basePath": "/api",
+    "schemes": ["http"],
+    "consumes": ["application/json"],
+    "produces": ["application/json"],
+    "paths": {
+      "/signup": {
+        "post": {
+          "summary": "Create a new user",
+          "description": "Create a new user with email and password",
+          "consumes": ["application/json"],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "user",
+              "description": "User details",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "first_name": {"type": "string"},
+                  "last_name": {"type": "string"},
+                  "email": {"type": "string"},
+                  "password": {"type": "string"}
+                }
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "User created successfully"
+            }
+          }
+        }
+      },
+      "/login": {
+        "post": {
+          "summary": "Login as a user",
+          "description": "Login with email and password",
+          "consumes": ["application/json"],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "user",
+              "description": "User credentials",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {"type": "string"},
+                  "password": {"type": "string"}
+                }
+              }
+            }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/speakers/setup": {
+      "post": {
+        "summary": "Setup speaker profile",
+        "description": "Setup speaker profile with expertise and price per session",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "speaker",
+            "description": "Speaker details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "expertise": {"type": "string"},
+                "price_per_session": {"type": "number"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Speaker profile setup successfully"
+          }
+        },
+        "security": {
+          "bearerAuth": []
+        }
+      }
+    },
+    "/speakers": {
+      "get": {
+        "summary": "Get list of speakers",
+        "description": "Get list of all speakers",
+        "responses": {
+          "200": {
+            "description": "List of speakers",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {"type": "integer"},
+                  "user_id": {"type": "integer"},
+                  "expertise": {"type": "string"},
+                  "price_per_session": {"type": "number"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/speakers/{id}": {
+      "get": {
+        "summary": "Get speaker profile",
+        "description": "Get speaker profile by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Speaker ID",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Speaker profile",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {"type": "integer"},
+                "user_id": {"type": "integer"},
+                "expertise": {"type": "string"},
+                "price_per_session": {"type": "number"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sessions": {
+      "post": {
+        "summary": "Book a session",
+        "description": "Book a session with a speaker",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "session",
+            "description": "Session details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "speaker_id": {"type": "integer"},
+                "start_time": {"type": "string"},
+                "end_time": {"type": "string"},
+                "date": {"type": "string"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Session booked successfully"
+          }
+        },
+        "security": {
+          "bearerAuth": []
+        }
+      }
+    },
+    "/time-slots/block": {
+      "post": {
+        "summary": "Block a time slot",
+        "description": "Block a time slot for a speaker",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "time_slot",
+            "description": "Time slot details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "start_time": {"type": "string"},
+                "end_time": {"type": "string"},
+                "date": {"type": "string"}
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Time slot blocked successfully"
+          }
+        },
+        "security": {
+          "bearerAuth": []
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
+}
