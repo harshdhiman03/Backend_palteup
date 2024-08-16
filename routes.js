@@ -3,6 +3,14 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const otpGenerator = require('otp-generator');
+const User = require('../models/user');
+const Speaker = require('../models/speaker');
+const Session = require('../models/session');
+const TimeSlot = require('../models/timeSlot');
+const { sendEmailNotification, createGoogleCalendarEvent } = require('../notifications');
+
+
+
 
 // User signup
 router.post('/signup', async (req, res) => {
@@ -56,9 +64,13 @@ function authenticate(userType) {
   };
 }
 // Speaker listing
-router.get('/speakers', async (req, res) => {
-    const speakers = await db.execute('SELECT * FROM speakers');
-    res.send(speakers);
+router.post('/sessions', authenticate('user'), async (req, res) => {
+    const { speaker_id, start_time, end_time, date } = req.body;
+    const user_id = req.user.id;
+    const session = await Session.createSession(speaker_id, user_id, start_time, end_time, date);
+    await blockTimeSlot(speaker_id, start_time, end_time, date);
+    sendEmailNotification(speaker_id, user_id, start_time, end_time, date);
+    createGoogleCalendarEvent(speaker_id, user_id, start_time, end_time
   });
   
   // Speaker profile
@@ -97,4 +109,6 @@ router.post('/time-slots/block', authenticate('speaker'), async (req, res) => {
     const speaker_id = req.user.id;
     await blockTimeSlot(speaker_id, start_time, end_time, date);
     res.send({ message: 'Time slot blocked successfully' });
+
+
   });
